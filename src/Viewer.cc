@@ -18,7 +18,7 @@
 
 
 #include "Viewer.h"
-#include <pangolin/pangolin.h>
+//#include <pangolin/pangolin.h>
 
 #include <mutex>
 
@@ -129,6 +129,7 @@ bool Viewer::ParseViewerParamFile(cv::FileStorage &fSettings)
 
 void Viewer::Run()
 {
+	/*
     mbFinished = false;
     mbStopped = false;
 
@@ -302,6 +303,7 @@ void Viewer::Run()
     }
 
     SetFinish();
+	*/
 }
 
 void Viewer::RequestFinish()
