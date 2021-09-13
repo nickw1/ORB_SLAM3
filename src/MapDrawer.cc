@@ -122,6 +122,7 @@ bool MapDrawer::ParseViewerParamFile(cv::FileStorage &fSettings)
 
 void MapDrawer::DrawMapPoints()
 {
+	/*
     const vector<MapPoint*> &vpMPs = mpAtlas->GetAllMapPoints();
     const vector<MapPoint*> &vpRefMPs = mpAtlas->GetReferenceMapPoints();
 
@@ -157,10 +158,12 @@ void MapDrawer::DrawMapPoints()
     }
 
     glEnd();
+	*/
 }
 
 void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph, const bool bDrawInertialGraph)
 {
+	/*
     const float &w = mKeyFrameSize;
     const float h = w*0.75;
     const float z = w*0.6;
@@ -350,6 +353,7 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph, const b
             }
         }
     }
+	*/
 }
 
 /*
