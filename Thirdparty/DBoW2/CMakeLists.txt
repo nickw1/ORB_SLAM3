@@ -39,7 +39,6 @@ file ( GLOB opencv_js "${opencvdir}/build_wasm/lib/*.a" )
 
 
 
-
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${opencv_include_modules} "${opencvdir}/include" "${opencvdir}/build_wasm")
