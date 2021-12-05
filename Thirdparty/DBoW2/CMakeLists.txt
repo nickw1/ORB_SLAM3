@@ -24,24 +24,16 @@ set(SRCS_DUTILS
   DUtils/Random.cpp
   DUtils/Timestamp.cpp)
 
-#find_package(OpenCV 4.0 QUIET)
-#if(NOT OpenCV_FOUND)
-#   find_package(OpenCV 3.0 QUIET)
-#   if(NOT OpenCV_FOUND)
-#      message(FATAL_ERROR "OpenCV > 3.0 not found.")
-#   endif()
-#endif()
-set(OpenCV_DIR ../../opencv/build_wasm)
-set(opencvdir "/home/nick/src/opencv")
-#opencv
-file ( GLOB opencv_include_modules "${opencvdir}/modules/*/include" )
-file ( GLOB opencv_js "${opencvdir}/build_wasm/lib/*.a" )
-
-
+find_package(OpenCV 4.0 QUIET)
+if(NOT OpenCV_FOUND)
+   find_package(OpenCV 3.0 QUIET)
+   if(NOT OpenCV_FOUND)
+      message(FATAL_ERROR "OpenCV > 3.0 not found.")
+   endif()
+endif()
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-include_directories(${opencv_include_modules} "${opencvdir}/include" "${opencvdir}/build_wasm")
+include_directories(${OpenCV_INCLUDE_DIRS})
 add_library(DBoW2 SHARED ${SRCS_DBOW2} ${SRCS_DUTILS})
-target_link_libraries(DBoW2 ${opencv_js})
-
+target_link_libraries(DBoW2 ${OpenCV_LIBS})

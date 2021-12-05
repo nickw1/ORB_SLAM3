@@ -1,18 +1,13 @@
 # ORB-SLAM3
 
-## Experiment to port to Emscripten
+### What is this
 
-This is an experiment to port ORB-SLAM3 (details below) to Emscripten.
+The emscripten port (i.e. no Pangolin, various other fixes to build on emscripten), but with the CMake files reset to use g++ and the system opencv, not opencv.js - and with the binary vocabulary code from surfii3z applied. Aim was to build the bin vocabulary generation tool.
 
-Current status as of Sep 2021:
+See issues #118, #300 in original ORB-SLAM3 repo as these came up when building.
 
-- The ORB-SLAM3 library builds. Note you need a version of `cmake` which supports the `SHELL: -s ...` syntax for specifying compiler options. CMake 3.10 does not, but CMake 3.21 does.
-
-- The examples do not all build as they depend on OpenCV functionality not provided by the emscripten version.
-
-- Modifications to the ORB-SLAM3 code have been necessary; in particular, all UI features have been deactivated, as the intention is to use a Web UI. So Pangolin is *not* a dependency.
-
-- Not actually tested to see if it works yet!
+Also had some odd behaviour in which DBoW2 wasn't being built as a shared
+library. Had to rebuild it manually using its own CMake file.
 
 ### V0.4: Beta version, 21 April 2021
 **Authors:** Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, [José M. M. Montiel](http://webdiis.unizar.es/~josemari/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/).
