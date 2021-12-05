@@ -47,3 +47,6 @@ cmake-build-debug/
 
 *.pyc
 *.osa
+
+tools/bin_vocabulary
+Vocabulary/ORBvoc.bin
