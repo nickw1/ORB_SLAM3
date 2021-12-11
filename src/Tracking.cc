@@ -1656,7 +1656,6 @@ void Tracking::ComputeVelocitiesAccBias(const vector<Frame*> &vpFs, float &bax, 
 
 void Tracking::Track()
 {
-
     if (bStepByStep)
     {
         while(!mbStep)

@@ -179,6 +179,7 @@ public:
     void InsertTrackTime(double& time);
 #endif
 
+    Atlas* getAtlas() { return mpAtlas; }
 private:
 
     // Input sensor
