@@ -1656,6 +1656,7 @@ void Tracking::ComputeVelocitiesAccBias(const vector<Frame*> &vpFs, float &bax, 
 
 void Tracking::Track()
 {
+    cout << "**** Tracking::Track(): state= " << mState << endl;
     if (bStepByStep)
     {
         while(!mbStep)
@@ -1682,12 +1683,12 @@ void Tracking::Track()
             CreateMapInAtlas();
             return;
         }
-        else if(mCurrentFrame.mTimeStamp>mLastFrame.mTimeStamp+1.0)
+         // Stop this check. maybe this will mess things up later but want to try and get the actual tracking started
+        else if(false) //mCurrentFrame.mTimeStamp>mLastFrame.mTimeStamp+1.0)
         {
             cout << "id last: " << mLastFrame.mnId << "    id curr: " << mCurrentFrame.mnId << endl;
             if(mpAtlas->isInertial())
             {
-
                 if(mpAtlas->isImuInitialized())
                 {
                     cout << "Timestamp jump detected. State set to LOST. Reseting IMU integration..." << endl;
@@ -1705,6 +1706,10 @@ void Tracking::Track()
                     cout << "Timestamp jump detected, before IMU initialization. Reseting..." << endl;
                     mpSystem->ResetActiveMap();
                 }
+            }
+            else
+            {
+                cout << "**** Quitting becaue timestamp difference is too great:" << (mCurrentFrame.mTimeStamp - mLastFrame.mTimeStamp) << endl;
             }
 
             return;
@@ -1735,7 +1740,8 @@ void Tracking::Track()
         vdIMUInteg_ms.push_back(timePreImu);
 #endif
 
-    }
+    } 
+
     mbCreatedMap = false;
 
     // Get Map Mutex -> Map cannot be changed
@@ -1755,6 +1761,7 @@ void Tracking::Track()
 
     if(mState==NOT_INITIALIZED)
     {
+        cout << "**** HANDLING NOT_INITIALIZED STATE" << endl;
         if(mSensor==System::STEREO || mSensor==System::RGBD || mSensor==System::IMU_STEREO)
             StereoInitialization();
         else
@@ -2282,9 +2289,10 @@ void Tracking::StereoInitialization()
 
 void Tracking::MonocularInitialization()
 {
-
+    cout << "**** MonocularInitialization(): keys count=" << mCurrentFrame.mvKeys.size() << endl;
     if(!mpInitializer)
     {
+        cout << "**** No initializer" << endl;
         // Set Reference Frame
         if(mCurrentFrame.mvKeys.size()>100)
         {
@@ -2329,10 +2337,12 @@ void Tracking::MonocularInitialization()
         // Find correspondences
         ORBmatcher matcher(0.9,true);
         int nmatches = matcher.SearchForInitialization(mInitialFrame,mCurrentFrame,mvbPrevMatched,mvIniMatches,100);
+        cout << "**** Number of ORB matches=" << nmatches << endl;
 
         // Check if there are enough correspondences
         if(nmatches<100)
         {
+            cout << "**** INSUFFICIENT MATCHES" << endl;
             delete mpInitializer;
             mpInitializer = static_cast<Initializer*>(NULL);
             fill(mvIniMatches.begin(),mvIniMatches.end(),-1);
@@ -2345,6 +2355,7 @@ void Tracking::MonocularInitialization()
 
         if(mpCamera->ReconstructWithTwoViews(mInitialFrame.mvKeysUn,mCurrentFrame.mvKeysUn,mvIniMatches,Rcw,tcw,mvIniP3D,vbTriangulated))
         {
+            cout << "**** ReconstructWithTwoViews has worked" << endl;
             for(size_t i=0, iend=mvIniMatches.size(); i<iend;i++)
             {
                 if(mvIniMatches[i]>=0 && !vbTriangulated[i])
@@ -2364,6 +2375,10 @@ void Tracking::MonocularInitialization()
             CreateInitialMapMonocular();
 
         }
+        else 
+        {
+            cout << "**** RECONSTRUCT WITH TWO VIEWS HAS FAILED" << endl;
+        }
     }
 }
 
@@ -2371,6 +2386,7 @@ void Tracking::MonocularInitialization()
 
 void Tracking::CreateInitialMapMonocular()
 {
+    cout << "**** CreateInitialMapMonocular()" << endl;
     // Create KeyFrames
     KeyFrame* pKFini = new KeyFrame(mInitialFrame,mpAtlas->GetCurrentMap(),mpKeyFrameDB);
     KeyFrame* pKFcur = new KeyFrame(mCurrentFrame,mpAtlas->GetCurrentMap(),mpKeyFrameDB);
@@ -2433,8 +2449,10 @@ void Tracking::CreateInitialMapMonocular()
     else
         invMedianDepth = 1.0f/medianDepth;
 
-    if(medianDepth<0 || pKFcur->TrackedMapPoints(1)<50) // TODO Check, originally 100 tracks
+    int trackedMapPoints = pKFcur->TrackedMapPoints(1);
+    if(medianDepth<0 || trackedMapPoints<50) // TODO Check, originally 100 tracks
     {
+        cout << "**** Wrong initialization, either the medianDepth " << medianDepth << " is less than 0, or the number of tracked map points " << trackedMapPoints << " is too low." << endl; 
         Verbose::PrintMess("Wrong initialization, reseting...", Verbose::VERBOSITY_NORMAL);
         mpSystem->ResetActiveMap();
         return;
