@@ -1776,7 +1776,7 @@ void Tracking::Track()
             mLastFrame = Frame(mCurrentFrame);
             return;
         }
-
+        cout << "**** Tracking::Track() - initialised correctly!" << endl;
         if(mpAtlas->GetAllMaps().size() == 1)
         {
             mnFirstFrameId = mCurrentFrame.mnId;
@@ -1784,6 +1784,7 @@ void Tracking::Track()
     }
     else
     {
+        cout << "**** NOW INITIALISED" << endl;
         // System is initialized. Track Frame.
         bool bOK;
 
@@ -1800,7 +1801,7 @@ void Tracking::Track()
             // you explicitly activate the "only tracking" mode.
             if(mState==OK)
             {
-
+                cout << "**** Doing tracking" << endl;
                 // Local Mapping might have changed some MapPoints tracked in last frame
                 CheckReplacedInLastFrame();
 
@@ -2388,18 +2389,23 @@ void Tracking::CreateInitialMapMonocular()
 {
     cout << "**** CreateInitialMapMonocular()" << endl;
     // Create KeyFrames
+    cout << "** Creating initial keyframe" << endl;
     KeyFrame* pKFini = new KeyFrame(mInitialFrame,mpAtlas->GetCurrentMap(),mpKeyFrameDB);
+    cout << "** Creating current keyframe" << endl;
     KeyFrame* pKFcur = new KeyFrame(mCurrentFrame,mpAtlas->GetCurrentMap(),mpKeyFrameDB);
 
     if(mSensor == System::IMU_MONOCULAR)
         pKFini->mpImuPreintegrated = (IMU::Preintegrated*)(NULL);
 
-
+    cout << "** Creating BoW for initial kf" << endl;
     pKFini->ComputeBoW();
+    cout << "** Creating BoW for current kf" << endl;
     pKFcur->ComputeBoW();
 
     // Insert KFs in the map
+    cout << "** Inserting initial kf into map" << endl;
     mpAtlas->AddKeyFrame(pKFini);
+    cout << "** Inserting current kf into map" << endl;
     mpAtlas->AddKeyFrame(pKFcur);
 
     for(size_t i=0; i<mvIniMatches.size();i++)
@@ -2411,12 +2417,14 @@ void Tracking::CreateInitialMapMonocular()
         cv::Mat worldPos(mvIniP3D[i]);
         MapPoint* pMP = new MapPoint(worldPos,pKFcur,mpAtlas->GetCurrentMap());
 
+        cout << "** For " << i << ": adding map point and observation" << endl;
         pKFini->AddMapPoint(pMP,i);
         pKFcur->AddMapPoint(pMP,mvIniMatches[i]);
 
         pMP->AddObservation(pKFini,i);
         pMP->AddObservation(pKFcur,mvIniMatches[i]);
 
+        cout << "** For " << i << ": computing descriptors and updating normal and depth" << endl;
         pMP->ComputeDistinctiveDescriptors();
         pMP->UpdateNormalAndDepth();
 
@@ -2425,11 +2433,13 @@ void Tracking::CreateInitialMapMonocular()
         mCurrentFrame.mvbOutlier[mvIniMatches[i]] = false;
 
         //Add to Map
+        cout << "** For " << i <<  ": adding to atlas" << endl;
         mpAtlas->AddMapPoint(pMP);
     }
 
 
     // Update Connections
+    cout << "** Updating connections "<< endl;
     pKFini->UpdateConnections();
     pKFcur->UpdateConnections();
 
@@ -2438,6 +2448,7 @@ void Tracking::CreateInitialMapMonocular()
 
     // Bundle Adjustment
     Verbose::PrintMess("New Map created with " + to_string(mpAtlas->MapPointsInMap()) + " points", Verbose::VERBOSITY_QUIET);
+    cout << "** Calling bundle adjustment" << endl;
     Optimizer::GlobalBundleAdjustemnt(mpAtlas->GetCurrentMap(),20);
 
     pKFcur->PrintPointDistribution();
@@ -2459,11 +2470,13 @@ void Tracking::CreateInitialMapMonocular()
     }
 
     // Scale initial baseline
+    cout << "** Scaling initial baseline" << endl;
     cv::Mat Tc2w = pKFcur->GetPose();
     Tc2w.col(3).rowRange(0,3) = Tc2w.col(3).rowRange(0,3)*invMedianDepth;
     pKFcur->SetPose(Tc2w);
 
-    // Scale points
+    // Scale points 
+    cout << "** Scaling points" << endl;
     vector<MapPoint*> vpAllMapPoints = pKFini->GetMapPointMatches();
     for(size_t iMP=0; iMP<vpAllMapPoints.size(); iMP++)
     {
@@ -2485,6 +2498,7 @@ void Tracking::CreateInitialMapMonocular()
     }
 
 
+    cout << "** Inserting kwyframes to mpLocalMapper" << endl;
     mpLocalMapper->InsertKeyFrame(pKFini);
     mpLocalMapper->InsertKeyFrame(pKFcur);
     mpLocalMapper->mFirstTs=pKFcur->mTimeStamp;
@@ -2501,6 +2515,7 @@ void Tracking::CreateInitialMapMonocular()
     mCurrentFrame.mpReferenceKF = pKFcur;
 
     // Compute here initial velocity
+    cout << "** Computing initial velocity" << endl;
     vector<KeyFrame*> vKFs = mpAtlas->GetAllKeyFrames();
 
     cv::Mat deltaT = vKFs.back()->GetPose()*vKFs.front()->GetPoseInverse();
@@ -2513,15 +2528,18 @@ void Tracking::CreateInitialMapMonocular()
 
     mLastFrame = Frame(mCurrentFrame);
 
+    cout << "** atlas: setting reference map points" << endl;
     mpAtlas->SetReferenceMapPoints(mvpLocalMapPoints);
 
     mpMapDrawer->SetCurrentCameraPose(pKFcur->GetPose());
 
+    cout << "** atlas: adding to key frame origins" << endl;
     mpAtlas->GetCurrentMap()->mvpKeyFrameOrigins.push_back(pKFini);
 
     mState=OK;
 
     initID = pKFcur->mnId;
+    cout << "**** CreateInitialMapMonocular() finished" << endl;
 }
 
 
