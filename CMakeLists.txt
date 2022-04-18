@@ -7,8 +7,14 @@ ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
+# The WASM build directory for opencv.js
 set(OpenCV_DIR ../opencv/build_wasm)
+
+# The OpenCV source directory
 set(opencvdir "/home/nick/src/opencv")
+
+#eigen
+set(EIGEN3_INCLUDE_DIR "Thirdparty/eigen3")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall   -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
@@ -16,6 +22,7 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
 
 add_compile_options("SHELL: -s USE_BOOST_HEADERS=1")
+add_link_options("SHELL: -s USE_BOOST_HEADERS=1")
 # pthreads
 add_compile_options("-pthread")
 add_link_options("-pthread")
@@ -58,7 +65,7 @@ endif()
 MESSAGE("OPENCV VERSION:")
 MESSAGE(${OpenCV_VERSION})
 
-find_package(Eigen3 3.1.0 REQUIRED)
+#find_package(Eigen3 3.1.0 REQUIRED)
 #find_package(Pangolin REQUIRED)
 find_package(realsense2)
 
@@ -137,7 +144,7 @@ add_subdirectory(Thirdparty/g2o)
 target_link_libraries(${PROJECT_NAME}
 #${OpenCV_LIBS}
 ${opencv_js}
-${EIGEN3_LIBS}
+#${EIGEN3_LIBS}
 #${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so

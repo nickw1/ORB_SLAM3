@@ -120,8 +120,10 @@ void Atlas::AddCamera(GeometricCamera* pCam)
 
 void Atlas::SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs)
 {
+    cout << "** Atlas::SetReferenceMapPoints()" << endl;
     unique_lock<mutex> lock(mMutexAtlas);
     mpCurrentMap->SetReferenceMapPoints(vpMPs);
+    cout << "** Atlas::SetReferenceMapPoints(): done" << endl;
 }
 
 void Atlas::InformNewBigChange()

@@ -2417,14 +2417,12 @@ void Tracking::CreateInitialMapMonocular()
         cv::Mat worldPos(mvIniP3D[i]);
         MapPoint* pMP = new MapPoint(worldPos,pKFcur,mpAtlas->GetCurrentMap());
 
-        cout << "** For " << i << ": adding map point and observation" << endl;
         pKFini->AddMapPoint(pMP,i);
         pKFcur->AddMapPoint(pMP,mvIniMatches[i]);
 
         pMP->AddObservation(pKFini,i);
         pMP->AddObservation(pKFcur,mvIniMatches[i]);
 
-        cout << "** For " << i << ": computing descriptors and updating normal and depth" << endl;
         pMP->ComputeDistinctiveDescriptors();
         pMP->UpdateNormalAndDepth();
 
@@ -2433,7 +2431,6 @@ void Tracking::CreateInitialMapMonocular()
         mCurrentFrame.mvbOutlier[mvIniMatches[i]] = false;
 
         //Add to Map
-        cout << "** For " << i <<  ": adding to atlas" << endl;
         mpAtlas->AddMapPoint(pMP);
     }
 
@@ -2529,8 +2526,10 @@ void Tracking::CreateInitialMapMonocular()
     mLastFrame = Frame(mCurrentFrame);
 
     cout << "** atlas: setting reference map points" << endl;
+    // NOTE unaligned memory access error appears to occur here
     mpAtlas->SetReferenceMapPoints(mvpLocalMapPoints);
 
+    cout << "** map drawer: setting current camera pose" << endl;
     mpMapDrawer->SetCurrentCameraPose(pKFcur->GetPose());
 
     cout << "** atlas: adding to key frame origins" << endl;
