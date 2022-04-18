@@ -4,6 +4,15 @@
 
 This is an experiment to port ORB-SLAM3 (details below) to Emscripten.
 
+Updates 2022-04-18:
+
+- Include eigen3 in `Thirdparty` for easier build.
+- No longer any attempt to build examples, as they will not work (they require OpenCV features outside of opencv.js)
+
+Updates Dec 2021:
+
+- See [this repo](https://github.com/nickw1/orb-slam-expts) for an experiment to get this working in a web application.
+
 Current status as of Sep 2021:
 
 - The ORB-SLAM3 library builds. Note you need a version of `cmake` which supports the `SHELL: -s ...` syntax for specifying compiler options. CMake 3.10 does not, but CMake 3.21 does.
@@ -11,8 +20,6 @@ Current status as of Sep 2021:
 - The examples do not all build as they depend on OpenCV functionality not provided by the emscripten version.
 
 - Modifications to the ORB-SLAM3 code have been necessary; in particular, all UI features have been deactivated, as the intention is to use a Web UI. So Pangolin is *not* a dependency.
-
-- Not actually tested to see if it works yet!
 
 ### V0.4: Beta version, 21 April 2021
 **Authors:** Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, [José M. M. Montiel](http://webdiis.unizar.es/~josemari/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/).
