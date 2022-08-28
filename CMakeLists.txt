@@ -27,6 +27,10 @@ add_link_options("SHELL: -s USE_BOOST_HEADERS=1")
 add_compile_options("-pthread")
 add_link_options("-pthread")
 
+# debugging
+add_compile_options("-g")
+add_link_options("-gsource-map")
+
 # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-deprecated -O3 -march=native ")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-deprecated -O3 -march=native")
 
