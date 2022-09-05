@@ -24,7 +24,6 @@
 #include<opencv2/features2d/features2d.hpp>
 #include <opencv2/video/tracking.hpp>
 
-#include"Viewer.h"
 #include"Atlas.h"
 #include"LocalMapping.h"
 #include"LoopClosing.h"
@@ -44,7 +43,6 @@
 namespace ORB_SLAM3
 {
 
-class Viewer;
 class Atlas;
 class LocalMapping;
 class LoopClosing;
@@ -73,7 +71,6 @@ public:
 
     void SetLocalMapper(LocalMapping* pLocalMapper);
     void SetLoopClosing(LoopClosing* pLoopClosing);
-    void SetViewer(Viewer* pViewer);
     void SetStepByStep(bool bSet);
 
     // Load new settings
@@ -268,7 +265,6 @@ protected:
     System* mpSystem;
     
     //Drawers
-    Viewer* mpViewer;
     bool bStepByStep;
 
     //Atlas
